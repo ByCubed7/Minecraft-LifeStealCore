@@ -1,0 +1,24 @@
+
+# - - / General \ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+death:
+
+  # The message the display when a player kills another
+  # KILLED -> player who was killed
+  # KILLER -> player who killed
+  # (String) Default: "KILLED died via KILLER's actions!"
+  message: "KILLED died via KILLER's actions!"
+
+  # The amount of hearts to transfer on murder
+  # On murder, the player killed will LOSE this amount of hearts
+  #   while the killer will GAIN this amount of hearts
+  # Funny enough you can negate this (set as -2) so pvp killers 
+  #   will LOSE hearts if they kill someone, which I think is pretty cool
+  # (Int) Default: 2
+  transfer_count: 2
+
+messages:
+  reset: "Your hearts have been reset!"
+  revive: "Revived PLAYER!"
+  set: "Updated your hearts!"
+  

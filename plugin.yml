@@ -1,0 +1,67 @@
+author: ByCubed7
+description: A lifesteal plugin by ByCubed7.
+
+version: 1.7.0-SNAPSHOT
+api-version: 1.18
+
+website: ByCubed7.github.io/commissions/plugins
+
+# Impo
+main: io.github.bycubed7.lifestealcore.LifestealCore
+name: LifestealCore
+prefix: LifestealCore
+
+load: POSTWORLD
+
+depend: [CoreCubes]
+
+commands:
+      
+   check:
+      description: Check the amount of hearts a player has
+      usage: "/check <player>"
+      permission: lifestealcore.check
+      
+   revive:
+      description: Give some of your hearts to a player to revive them
+      usage: "/revive <player> [amount of hearts to give]"
+      permission: lifestealcore.revive
+      
+   reset:
+      description: Resets the players hearts
+      usage: "/reset <player/players>"
+      permission: lifestealcore.reset
+      
+   set:
+      description: Sets the amount of hearts the player has
+      usage: "/set <player> <amount>"
+      permission: lifestealcore.set
+
+
+permissions:
+    
+  lifestealcore.check:
+    description: Allows a player to use the check command
+    default: true
+    
+  lifestealcore.revive:
+    description: Allows a player to use the revive command
+    default: true
+    
+  lifestealcore.reset:
+    description: Allows a player to use the reset command
+    default: op
+    
+  lifestealcore.set:
+    description: Allows a player to use the set command
+    default: op
+    
+  lifestealcore.*:
+    description: Wildcard permission
+    default: op
+    children:
+      lifestealcore.check: true
+      lifestealcore.revive: true
+      lifestealcore.reset: true
+      lifestealcore.set: true
+
