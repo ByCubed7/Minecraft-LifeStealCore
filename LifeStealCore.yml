@@ -21,4 +21,5 @@ messages:
   reset: "Your hearts have been reset!"
   revive: "Revived PLAYER!"
   set: "Updated your hearts!"
+  check: "PLAYER has VALUE hearts!"
   

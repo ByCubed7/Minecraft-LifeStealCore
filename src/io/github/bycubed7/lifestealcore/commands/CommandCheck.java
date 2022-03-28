@@ -1,8 +1,8 @@
 package io.github.bycubed7.lifestealcore.commands;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,7 +12,6 @@ import io.github.bycubed7.corecubes.commands.ActionFailed;
 import io.github.bycubed7.corecubes.managers.ConfigManager;
 import io.github.bycubed7.corecubes.managers.Tell;
 import io.github.bycubed7.lifestealcore.managers.MemberManager;
-import io.github.bycubed7.lifestealcore.units.Member;
 
 public class CommandCheck extends Action {
 
@@ -28,8 +27,8 @@ public class CommandCheck extends Action {
 	protected ActionFailed approved(Player player, String[] args) {
 		if (args.length == 0) return ActionFailed.ARGUMENTLENGTH;
 		
-		Optional<Member> possibleMember = MemberManager.findMemberByName(args[0]);
-		if (possibleMember.isEmpty()) {
+		Player otherPlayer = Bukkit.getPlayer(args[0]);
+		if (otherPlayer == null) {
 			Tell.player(player, "Can't find player!");
 			return ActionFailed.OTHER;
 		}
@@ -39,7 +38,8 @@ public class CommandCheck extends Action {
 
 	@Override
 	protected boolean execute(Player player, String[] args) {
-		Integer heartCount = MemberManager.findMemberByName(args[0]).get().getHearts();		
+		Player otherPlayer = Bukkit.getPlayer(args[0]);
+		Integer heartCount = MemberManager.getMember(otherPlayer).getHearts();		
 		Tell.player(player, feedbackMessage
 				.replaceAll("PLAYER", args[0])
 				.replaceAll("VALUE", heartCount.toString())

@@ -3,6 +3,7 @@ package io.github.bycubed7.lifestealcore.commands;
 import java.util.List;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,14 +52,17 @@ public class CommandRevive extends Action {
 		}
 		
 		// Check the member exists
-		Optional<Member> possibleMember = MemberManager.findMemberByName(args[0]);
-		if (possibleMember.isEmpty()) {
+		
+		Player otherPlayer = Bukkit.getPlayer(args[0]);
+		
+		if (otherPlayer == null) {
 			Tell.player(player, "Can't find player to revive!");
 			return ActionFailed.OTHER;
 		}
+		Member possibleMember = MemberManager.getMember(otherPlayer);
 		
 		// Is the other member in
-		if (possibleMember.get().getHearts() > 0) {
+		if (possibleMember.getHearts() > 0) {
 			Tell.player(player, "The member is still alive!");
 			return ActionFailed.OTHER;
 		}
@@ -69,7 +73,7 @@ public class CommandRevive extends Action {
 	@Override
 	protected boolean execute(Player player, String[] args) {
 		Member member = MemberManager.getMember(player);
-		Member memberToRevive = MemberManager.findMemberByName(args[0]).get();
+		Member memberToRevive = MemberManager.getMember(Bukkit.getPlayer(args[0]));
 
 		// Get the transfer amount
 		Integer transferAmount = 2;

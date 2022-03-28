@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -49,6 +50,20 @@ public class MemberManager implements Listener {
 		Member member = possibleMember.orElse(createMember(player));
 		return member;
 	}
+	
+	// Get or create member
+	public static Optional<Member> getMemberFromID(UUID id) {
+		Optional<Member> possibleMember = members.stream().filter(m -> m.getId().equals(id)).findFirst();
+		return possibleMember;
+	}
+	
+	// Get or create member
+	public static Optional<Member> getMemberFromName(String name) {
+		Optional<Member> possibleMember = members.stream().filter(m -> m.getName().equals(name)).findFirst();
+		return possibleMember;
+	}
+	
+	
 	public static void setMember(Member member) {
 		members.remove(member);
 		members.add(member);
@@ -103,10 +118,10 @@ public class MemberManager implements Listener {
 		saveToConfig();
 	}
 	
-	@Deprecated
-	public static Optional<Member> findMemberByName(String name) {
-		return members.stream().filter(m -> m.getName().equals(name)).findFirst();
-	}
+//	@Deprecated
+//	public static Optional<Member> findMemberByName(String name) {
+//		return members.stream().filter(m -> m.getName().equals(name)).findFirst();
+//	}
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {

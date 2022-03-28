@@ -2,9 +2,8 @@ package io.github.bycubed7.lifestealcore.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,9 +35,10 @@ public class CommandReset extends Action {
 			//members.add(MemberManager.GetMember(player));
 		else
 			for (String playerName : args) {
-				Optional<Member> memberToAdd = MemberManager.findMemberByName(playerName);
+				Player otherplayer = Bukkit.getPlayer(playerName);
 				
-				if (memberToAdd.isEmpty()) {
+				if (otherplayer == null) {
+					//Member memberToAdd = MemberManager.getMember(otherplayer);
 					Tell.player(player, "Can not find player: " + playerName + "!");
 					return ActionFailed.OTHER;
 				}
@@ -59,7 +59,7 @@ public class CommandReset extends Action {
 			members.add(MemberManager.getMember(player));
 		else
 			for (String playerName : args)
-				members.add(MemberManager.findMemberByName(playerName).get());
+				members.add(MemberManager.getMember(Bukkit.getPlayer(playerName)));
 		
 		members.forEach(m -> {
 			m.setHearts(20);

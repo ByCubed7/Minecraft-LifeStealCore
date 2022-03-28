@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.bycubed7.corecubes.commands.Action;
 import io.github.bycubed7.corecubes.commands.ActionFailed;
 import io.github.bycubed7.corecubes.managers.ConfigManager;
-import io.github.bycubed7.corecubes.managers.Debug;
 import io.github.bycubed7.corecubes.managers.Tell;
 import io.github.bycubed7.lifestealcore.managers.MemberManager;
 import io.github.bycubed7.lifestealcore.units.Member;
