@@ -1,7 +1,7 @@
 author: ByCubed7
 description: A lifesteal plugin by ByCubed7.
 
-version: 1.7.0-SNAPSHOT
+version: 1.8.3-SNAPSHOT
 api-version: 1.18
 
 website: ByCubed7.github.io/commissions/plugins
@@ -9,13 +9,16 @@ website: ByCubed7.github.io/commissions/plugins
 # Impo
 main: io.github.bycubed7.lifestealcore.LifestealCore
 name: LifestealCore
-prefix: LifestealCore
+prefix: Lifesteal
 
 load: POSTWORLD
 
 depend: [CoreCubes]
 
 commands:
+      
+   lifesteal:
+      description: Generic prefix command
       
    check:
       description: Check the amount of hearts a player has
@@ -36,6 +39,11 @@ commands:
       description: Sets the amount of hearts the player has
       usage: "/set <player> <amount>"
       permission: lifestealcore.set
+      
+   pause:
+      description: Pauses the player so that they no longer lose or gain hearts on a kill
+      usage: "/pause <players>"
+      permission: lifestealcore.pause
 
 
 permissions:
@@ -54,6 +62,10 @@ permissions:
     
   lifestealcore.set:
     description: Allows a player to use the set command
+    default: op
+    
+  lifestealcore.pause:
+    description: Allows a player to use the pause command
     default: op
     
   lifestealcore.*:

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -20,6 +19,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import io.github.bycubed7.corecubes.CubePlugin;
 import io.github.bycubed7.corecubes.managers.ConfigManager;
 import io.github.bycubed7.corecubes.managers.Debug;
+import io.github.bycubed7.lifestealcore.commands.CommandPause;
 import io.github.bycubed7.lifestealcore.units.Member;
 
 public class MemberManager implements Listener {
@@ -109,6 +109,13 @@ public class MemberManager implements Listener {
 	}
 	
 	public static void onMurder(Member killed, Member killer) {
+		
+		if (CommandPause.paused.contains(killed) || CommandPause.paused.contains(killer)) {
+			Debug.log("Did NOT take hearts from " + killed.getName() + " and give them to " + killer.getName() + " as one of them are paused");
+			return;
+		}
+		Debug.log("Took " + transferAmount + " hearts from " + killed.getName() + " and gave them to " + killer.getName());
+		
 		killer.addHearts(transferAmount);
 		killed.removeHearts(transferAmount);
 		killer.updateHearts();

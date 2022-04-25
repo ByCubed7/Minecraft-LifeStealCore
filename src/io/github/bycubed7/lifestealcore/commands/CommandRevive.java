@@ -1,15 +1,17 @@
 package io.github.bycubed7.lifestealcore.commands;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bycubed7.corecubes.CubePlugin;
 import io.github.bycubed7.corecubes.commands.Action;
-import io.github.bycubed7.corecubes.commands.ActionFailed;
+import io.github.bycubed7.corecubes.commands.ActionUse;
+import io.github.bycubed7.corecubes.commands.Arg;
+import io.github.bycubed7.corecubes.commands.Execution;
 import io.github.bycubed7.corecubes.managers.ConfigManager;
 import io.github.bycubed7.corecubes.managers.Tell;
 import io.github.bycubed7.lifestealcore.managers.MemberManager;
@@ -19,66 +21,71 @@ public class CommandRevive extends Action {
 
 	private String feedbackMessage = "Revived PLAYER!";
 
-	public CommandRevive(JavaPlugin _plugin) {
+	public CommandRevive(CubePlugin _plugin) {
 		super("Revive", _plugin);
 		ConfigManager config = new ConfigManager(plugin, "LifeStealCore.yml");
 		feedbackMessage = config.getString("messages."+name.toLowerCase());
+		
 	}
 
 	@Override
-	protected ActionFailed approved(Player player, String[] args) {
-		// Revive <Username> [hearts]
-		
-		if (args.length == 0) return ActionFailed.ARGUMENTLENGTH;
+	protected void setupArguments(List<ActionUse> arguments) {
+		arguments.add( ActionUse.create()
+			.add(Arg.create("player", "PLAYER"))
+		);
+	}
 
-		Integer transferAmount = 2;
+	@Override
+	protected Execution approved(Player player, Map<String, String> args) {
+		// Revive <Username> [hearts]
+
+		String targetPlayerName = args.get("player");
+		String targetTransferAmount = args.getOrDefault("value", "2");
 		
+		if (targetPlayerName == null) 
+			return Execution.createFail()
+					.setReason("Can't find player to revive!");
+		
+		Player otherPlayer = Bukkit.getPlayer(targetPlayerName);
+		if (otherPlayer == null)
+			return Execution.createFail().setReason("Can't find player: " + targetPlayerName);
+				
 		// Check the argument is a number
-		if (args.length > 2) {
-			try {
-				transferAmount = Integer.parseInt(args[1]);
-			} 
-	        catch (NumberFormatException ex) {
-	        	return ActionFailed.USAGE;
-	        }
-		}
+		int transferAmount;
+		try {
+			transferAmount = Integer.parseInt(targetTransferAmount);
+		} 
+	    catch (NumberFormatException ex) {
+	       	return Execution.USAGE;
+	    }
 		
 		Member member = MemberManager.getMember(player);
 		
 		// Does the player have enough hearts?
-		if (member.getHearts() < transferAmount) {
-			Tell.player(player, "You don't have any enough hearts to revive with!");
-			return ActionFailed.OTHER;
-		}
-		
-		// Check the member exists
-		
-		Player otherPlayer = Bukkit.getPlayer(args[0]);
-		
-		if (otherPlayer == null) {
-			Tell.player(player, "Can't find player to revive!");
-			return ActionFailed.OTHER;
-		}
+		if (member.getHearts() < transferAmount)
+			return Execution.createFail()
+					.setReason("You don't have any enough hearts to revive with!");
+
 		Member possibleMember = MemberManager.getMember(otherPlayer);
 		
 		// Is the other member in
-		if (possibleMember.getHearts() > 0) {
-			Tell.player(player, "The member is still alive!");
-			return ActionFailed.OTHER;
-		}
+		if (possibleMember.getHearts() > 0)
+			return Execution.createFail()
+					.setReason("The member is still alive!");
 		
-		return ActionFailed.NONE;
+		return Execution.NONE;
 	}
 
 	@Override
-	protected boolean execute(Player player, String[] args) {
+	protected boolean execute(Player player, Map<String, String> args) {
+		String targetPlayerName = args.get("player");
+		String targetTransferAmount = args.getOrDefault("value", "2");
+		
 		Member member = MemberManager.getMember(player);
-		Member memberToRevive = MemberManager.getMember(Bukkit.getPlayer(args[0]));
+		Member memberToRevive = MemberManager.getMember(Bukkit.getPlayer(targetPlayerName));
 
 		// Get the transfer amount
-		Integer transferAmount = 2;
-		if (args.length > 2)
-			transferAmount = Integer.parseInt(args[1]);
+		int transferAmount = Integer.parseInt(targetTransferAmount);
 		
 		// Transfer the hearts
 		member.removeHearts(transferAmount);
@@ -93,7 +100,7 @@ public class CommandRevive extends Action {
 		MemberManager.saveToConfig();	
 		
 		// Feedback
-		Tell.player(player, feedbackMessage.replaceAll("PLAYER", args[0]));
+		Tell.player(player, feedbackMessage.replaceAll("PLAYER", targetPlayerName));
 		
 		// Tell other player, if they are on
 		Optional<Player> possibleOtherPlayer = memberToRevive.getPlayer();
@@ -101,11 +108,6 @@ public class CommandRevive extends Action {
 			Tell.player(possibleOtherPlayer.get(), player.getDisplayName() + " has revived you!");
 		
 		return true;
-	}
-
-	@Override
-	protected List<String> tab(Player player, Command command, String[] args) {
-		return null;
 	}
 
 }

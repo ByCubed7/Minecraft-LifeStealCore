@@ -1,84 +1,90 @@
 package io.github.bycubed7.lifestealcore.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bycubed7.corecubes.CubePlugin;
 import io.github.bycubed7.corecubes.commands.Action;
-import io.github.bycubed7.corecubes.commands.ActionFailed;
+import io.github.bycubed7.corecubes.commands.ActionUse;
+import io.github.bycubed7.corecubes.commands.Arg;
+import io.github.bycubed7.corecubes.commands.Execution;
 import io.github.bycubed7.corecubes.managers.ConfigManager;
+import io.github.bycubed7.corecubes.managers.Debug;
 import io.github.bycubed7.corecubes.managers.Tell;
 import io.github.bycubed7.lifestealcore.managers.MemberManager;
 import io.github.bycubed7.lifestealcore.units.Member;
 
 public class CommandSet extends Action {
 
-	private String feedbackMessage = "Updated hearts!";
+	private String feedbackMessage = "Updated your hearts!";
 	
-	public CommandSet(JavaPlugin _plugin) {
+	public CommandSet(CubePlugin _plugin) {
 		super("Set", _plugin);
 		ConfigManager config = new ConfigManager(plugin, "LifeStealCore.yml");
 		feedbackMessage = config.getString("messages."+name.toLowerCase());
+
 	}
 
 	@Override
-	protected ActionFailed approved(Player player, String[] args) {
+	protected void setupArguments(List<ActionUse> arguments) {
+		arguments.add(
+			ActionUse.create()
+				.add(Arg.create("player", "PLAYER"))
+				.add(Arg.create("value", "20"))
+		);
+		
+		arguments.add(
+			ActionUse.create()
+				.add(Arg.create("value", "20"))
+		);
+	}
 
-		// TODO: set <number>
-		// set [username] <number>
-
-		if (args.length < 2) return ActionFailed.ARGUMENTLENGTH;
+	@Override
+	protected Execution approved(Player player, Map<String, String> args) {
+		String targetPlayerName = args.get("player");
+		String targetTransferAmount = args.getOrDefault("value", "2");
+		
+		Debug.log("targetPlayerName : " + targetPlayerName);
+		Debug.log("targetTransferAmount : " + targetTransferAmount);
+		
+		if (targetPlayerName == null) 
+			return Execution.createFail()
+					.setReason("Can't find player to set!");
 		
 		// Check the argument is a number
 		try {
-			Integer.parseInt(args[args.length - 1]);
+			Integer.parseInt(targetTransferAmount);
 		} 
 	    catch (NumberFormatException ex) {
-	     	return ActionFailed.USAGE;
+	     	return Execution.USAGE;
 	    }
 		
-		// Iterate through all except the last argument
-		for (int i = 0; i < args.length - 1; i++) {
-			Player foundPlayer = Bukkit.getPlayer(args[i]);  
-			if (foundPlayer == null) {
-				Tell.player(player, "Can't find player " + args[i]);
-				return ActionFailed.OTHER;
-			}
-		}
-		
-		return ActionFailed.NONE;
+		return Execution.NONE;
 	}
 
 	@Override
-	protected boolean execute(Player player, String[] args) {
-		
-		// Check the argument is a number
-		Integer setAmount = Integer.parseInt(args[args.length - 1]);
-		
+	protected boolean execute(Player player, Map<String, String> args) {
+		String targetPlayerName = args.get("player");
+		String targetTransferAmount = args.getOrDefault("value", "2");
+
 		// Iterate through all except the last argument
-		for (int i = 0; i < args.length - 1; i++) {
-			Player foundPlayer = Bukkit.getPlayer(args[i]);
+		Player foundPlayer = Bukkit.getPlayer(targetPlayerName);
+		int transferAmount = Integer.parseInt(targetTransferAmount);
 			
-			Member member = MemberManager.getMember(foundPlayer);
-			member.setHearts(setAmount);
-			member.updateHearts();
-			member.updateGamemode();
-			MemberManager.setMember(member);
-			
-			Tell.player(foundPlayer, "Updated your hearts!");
-		}
+		Member member = MemberManager.getMember(foundPlayer);
+		member.setHearts(transferAmount);
+		member.updateHearts();
+		member.updateGamemode();
+		MemberManager.setMember(member);
+		
+		Tell.player(foundPlayer, feedbackMessage);
+		
+		
 		MemberManager.saveToConfig();
 		
 		return true;
 	}
-
-	@Override
-	protected List<String> tab(Player arg0, Command arg1, String[] arg2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

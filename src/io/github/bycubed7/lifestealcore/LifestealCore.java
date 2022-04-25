@@ -1,6 +1,8 @@
 package io.github.bycubed7.lifestealcore;
+
 import io.github.bycubed7.corecubes.CubePlugin;
 import io.github.bycubed7.lifestealcore.commands.CommandCheck;
+import io.github.bycubed7.lifestealcore.commands.CommandPause;
 import io.github.bycubed7.lifestealcore.commands.CommandReset;
 import io.github.bycubed7.lifestealcore.commands.CommandRevive;
 import io.github.bycubed7.lifestealcore.commands.CommandSet;
@@ -26,14 +28,12 @@ public class LifestealCore extends CubePlugin {
 	@Override
 	protected void onCommands() {
 		new CommandCheck(this);
-		//new CommandPause(this);
+		new CommandPause(this);
 		new CommandReset(this);
 		new CommandRevive(this);
 		new CommandSet(this);
+		new CommandPause(this);
 	}
-
-	@Override
-	protected void onListeners() {}
 
 	@Override
 	protected void onManagers() {
